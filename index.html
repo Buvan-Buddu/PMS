@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile Management System</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Slab:wght@400;700&display=swap" rel="stylesheet">
+    
+    
+</head>
+<body>
+
+    <div class="container">
+        <h1><img src="profile.png" alt="Profile Icon" class="header-icon"> Profile Management System</h1>
+
+        <form id="profileForm">
+            <input type="hidden" id="profileId" value="">
+            
+            <h2>Create / Edit Profile</h2>
+            
+            <div class="input-group">
+                <label for="name">Full Name:</label>
+                <input type="text" id="name" required>
+            </div>
+            
+            <div class="input-group">
+                <label for="email">Email:</label>
+                <input type="email" id="email" required>
+            </div>
+            
+            <div class="input-group">
+                <label for="dob">Date of Birth:</label>
+                <input type="date" id="dob">
+            </div>
+            
+            <div class="input-group">
+                <label for="address">Address:</label>
+                <textarea id="address"></textarea>
+            </div>
+            
+            <hr style="margin: 15px 0;">
+
+            <h2>Document Upload Details (Simulated)</h2>
+
+            <div class="input-group">
+                <label for="documentName">Document Type (e.g., ID, CV):</label>
+                <input type="text" id="documentName">
+            </div>
+
+            <div class="input-group">
+                <label for="documentUpload">Select File (Simulated):</label>
+                <input type="file" id="documentUpload">
+            </div>
+            
+            <hr>
+
+            <div class="input-group action-buttons">
+                <button type="submit" id="submitBtn">Create Profile</button>
+                <button type="button" id="cancelBtn" style="display: none;">Cancel Edit</button>
+            </div>
+        </form>
+
+        <hr>
+
+        <div id="viewProfileArea" style="display: none; padding: 20px; border: 1px solid #191970; background-color: #f0f0f5; color: #333; margin-bottom: 30px;">
+            <h3>Viewing Profile JSON Data</h3>
+            <pre id="profileDetailsContent" style="white-space: pre-wrap; word-wrap: break-word;"></pre>
+            <button type="button" id="closeViewBtn">Close View</button>
+        </div>
+        
+        <div id="pdfViewContainer" class="pdf-view-container" style="display: none;">
+            <div id="pdfViewContent" class="pdf-content"></div>
+            <div class="pdf-actions">
+                <button type="button" id="printPdfBtn">🖨️ Print/View PDF</button>
+                <button type="button" id="closePdfBtn">Close</button>
+            </div>
+        </div>
+
+        <hr>
+
+        <h2>Profiles Directory 📂</h2>
+        <div id="profilesContainer" class="profile-card-container"></div>
+        
+    </div>
+
+    <script src="script.js"></script>
+    
+
+</body>
+</html>
