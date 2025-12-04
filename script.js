@@ -2,7 +2,7 @@
 const STORAGE_KEY = 'detailedProfilesData';
 const profilesContainer = document.getElementById('profilesContainer');
 const profileForm = document.getElementById('profileForm');
-const viewArea = document.getElementById('viewProfileArea');
+const viewArea = document.getElementById('viewProfileArea'); // JSON view (kept hidden but functional)
 const profileDetailsContent = document.getElementById('profileDetailsContent');
 const pdfViewContainer = document.getElementById('pdfViewContainer');
 const pdfViewContent = document.getElementById('pdfViewContent');
@@ -16,7 +16,6 @@ function getProfiles() {
 }
 
 function saveProfiles(profiles) {
-    // Note: localStorage has size limits (typically 5MB). Storing large files will fail.
     localStorage.setItem(STORAGE_KEY, JSON.stringify(profiles));
 }
 
@@ -38,13 +37,11 @@ function saveAndRender(data, id) {
         const index = profiles.findIndex(p => p.id === profileIdInt);
         if (index !== -1) {
             profiles[index] = { ...profiles[index], ...data };
-            alert(`Profile for ${data.name} updated.`);
         }
     } else {
         // CREATE Operation
         const newId = Date.now();
         profiles.push({ id: newId, ...data });
-        alert(`Profile for ${data.name} created.`);
     }
 
     saveProfiles(profiles);
@@ -126,7 +123,7 @@ function loadProfileForEdit(id) {
     }
 }
 
-// --- 3. RENDERING & VIEWING (Modified Button Layout) ---
+// --- 3. RENDERING & VIEWING (Using Image Icons and Left Alignment) ---
 
 function renderProfiles() {
     profilesContainer.innerHTML = ''; 
@@ -137,11 +134,18 @@ function renderProfiles() {
         return;
     }
     
-    // --- Unique Unicode Icons ---
-    const ICON_EMAIL = '📧'; 
-    const ICON_DOB = '🗓️'; 
-    const ICON_ADDRESS = '📍'; 
-    const ICON_DOC = '🗂️'; 
+    // --- Image Icons (Replaced Unicode) ---
+    // Define a standard style for the inline images, ensuring they fit the card-icon span
+    const IMG_STYLE = 'style="width: 25px; height: 25px; vertical-align: middle; margin-top: -3px;"';
+    
+    // 1) Email (image_7394dd.png)
+    const ICON_EMAIL = `<img src="e.png" ${IMG_STYLE}>`; 
+    // 2) DOB (image_73949d.jpg)
+    const ICON_DOB = `<img src="c.jpg" ${IMG_STYLE}>`; 
+    // 3) Address (image_739405.png)
+    const ICON_ADDRESS = `<img src="l.png" ${IMG_STYLE}>`; 
+    // 4) Document (image_739062.png)
+    const ICON_DOC = `<img src="f.png" ${IMG_STYLE}>`; 
 
     profiles.forEach(profile => {
         const card = document.createElement('div');
@@ -149,12 +153,12 @@ function renderProfiles() {
         card.setAttribute('data-id', profile.id);
         
         // Determine button visibility based on document content availability
-        // If content is stored, show View/Download. Otherwise, show File Not Stored.
+        // JSON Download button is removed as requested
         const viewDownloadButton = profile.documentContent 
             ? `<button class="view-pdf-btn" onclick="viewProfilePdf(${profile.id})">View/Download File</button>`
             : `<button class="view-pdf-btn" disabled style="background-color: #AABBCB;">File Not Stored</button>`;
 
-        // The specific button layout you requested
+
         card.innerHTML = `
             <div class="card-header">
                 <h3>${profile.name}</h3>
@@ -186,7 +190,6 @@ function renderProfiles() {
             <div class="card-actions">
                 ${viewDownloadButton} 
                 <button class="edit-btn" onclick="loadProfileForEdit(${profile.id})">Edit</button>
-                <button class="download-btn" onclick="downloadProfileData(${profile.id})">Download JSON Data</button>
                 <button class="delete-btn" onclick="deleteProfile(${profile.id})">Delete</button>
             </div>
         `;
@@ -195,37 +198,7 @@ function renderProfiles() {
     });
 }
 
-/**
- * Downloads the profile data as a JSON file. 
- * @param {number} id
- */
-function downloadProfileData(id) {
-    const profiles = getProfiles();
-    const profileData = profiles.find(p => p.id === id);
-    
-    if (!profileData) {
-        alert('Profile not found!');
-        return;
-    }
-    
-    const dataStr = JSON.stringify(profileData, null, 4);
-    const blob = new Blob([dataStr], { type: "text/json" });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    
-    const filename = profileData.name.replace(/\s/g, '_').replace(/[^\w]/g, '') + '_Profile.json';
-    link.download = filename;
-    
-    link.href = url;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    
-    URL.revokeObjectURL(url);
-    alert(`Downloading profile data for ${profileData.name}...`);
-}
-
-// --- 4. PDF View/Print & Download (Updated View Panel Actions) ---
+// --- 4. PDF View/Download ---
 
 function viewProfilePdf(id) {
     const profiles = getProfiles();
@@ -235,15 +208,15 @@ function viewProfilePdf(id) {
         const fileExtension = profile.documentFileName.split('.').pop().toLowerCase();
         let previewContent = '';
         
-        // 1. Attempt to preview common image formats
-        if (['jpg', 'jpeg', 'png', 'gif', 'bmp'].includes(fileExtension)) {
-            // Use the Base64 string as the image source!
+        // Attempt to preview common image formats or use iframe for data URLs (works for many files)
+        if (['jpg', 'jpeg', 'png', 'gif', 'bmp', 'pdf'].includes(fileExtension)) {
             previewContent = `
-                <h3>Image Preview</h3>
-                <img src="${profile.documentContent}" style="max-width: 100%; height: auto; border: 1px solid #ccc; margin-top: 15px;">
+                <h3>Document Preview</h3>
+                <p>Preview for this document type may not be reliable. Please use the download button below.</p>
+                <iframe src="${profile.documentContent}" style="width: 100%; height: 500px; border: 1px solid #ccc; margin-top: 15px;"></iframe>
             `;
         } else {
-             // Fallback for PDF, DOCX, or other file types
+             // Fallback for DOCX, or other file types
              previewContent = `
                 <h3>Document View/Download</h3>
                 <p>The document <strong>'${profile.documentFileName}'</strong> has been successfully stored (Type: .${fileExtension}).</p>
@@ -251,7 +224,7 @@ function viewProfilePdf(id) {
             `;
         }
         
-        // 2. Add the download button (The crucial element to get the original file)
+        // Add the download button
         const downloadButtonHtml = `
             <button type="button" id="downloadOriginalFileBtn" 
                 style="background-color: #28A745; color: white; margin-top: 15px; margin-right: 15px;">
@@ -275,13 +248,14 @@ function viewProfilePdf(id) {
         pdfViewContainer.style.display = 'block';
         pdfViewContainer.scrollIntoView({ behavior: 'smooth' });
     } else {
+        // Warning if no document content is stored
         pdfViewContent.innerHTML = `
             <h3>Document Details</h3>
             <p><strong>Document Type:</strong> ${profile.documentName || 'N/A'}</p>
             <p><strong>File Tracked:</strong> ${profile.documentFileName || 'No file tracked'}</p>
             <hr style="border-top: 1px dashed #ccc;">
             <p style="color: red; font-weight: bold; margin-top: 15px;">
-                ⚠️ NOTE: No document content was stored for this profile (ID: ${profile.id}). 
+                ⚠️ NOTE: No document content was stored for this profile. 
                 Please edit the profile and upload a file to enable viewing/downloading.
             </p>
         `;
@@ -292,15 +266,12 @@ function viewProfilePdf(id) {
 
 /**
  * Downloads the actual file content stored as a Base64 string.
- * @param {string} dataUrl - The Base64 data URL string (e.g., 'data:image/png;base64,...').
- * @param {string} filename - The original file name.
  */
 function downloadOriginalFile(dataUrl, filename) {
     const link = document.createElement('a');
     link.href = dataUrl; // Base64 string is directly usable as href
     link.download = filename;
     
-    // Simulate a click to start the download
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -309,12 +280,11 @@ function downloadOriginalFile(dataUrl, filename) {
 }
 
 
-// --- 5. EVENT LISTENERS & INITIALIZATION (Updated) ---
+// --- 5. EVENT LISTENERS & INITIALIZATION ---
 
-// Expose functions globally for use in inline onclick handlers
+// Expose functions globally
 window.loadProfileForEdit = loadProfileForEdit;
 window.deleteProfile = deleteProfile;
-window.downloadProfileData = downloadProfileData; 
 window.viewProfilePdf = viewProfilePdf; 
 
 // Form Submission listener
@@ -322,13 +292,6 @@ profileForm.addEventListener('submit', handleSaveProfile);
 
 // Cancel Button listener
 document.getElementById('cancelBtn').addEventListener('click', resetForm);
-
-// Close View Button listener (for JSON view)
-document.getElementById('closeViewBtn').addEventListener('click', () => {
-    viewArea.style.display = 'none';
-});
-
-// REMOVED: The printPdfBtn listener is removed as requested to simplify the view actions.
 
 // Close PDF View listener
 document.getElementById('closePdfBtn').addEventListener('click', () => {
