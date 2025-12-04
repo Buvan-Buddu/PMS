@@ -1,8 +1,4 @@
-
-     
-            
-           
-   <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -24,22 +20,22 @@
             <h2>Create / Edit Profile</h2>
             
             <div class="input-group">
-                <label for="name">Full Name:</label>
+                <label for="name">Full Name :</label>
                 <input type="text" id="name" required>
             </div>
             
             <div class="input-group">
-                <label for="email">Email:</label>
+                <label for="email">Email :</label>
                 <input type="email" id="email" required>
             </div>
             
             <div class="input-group">
-                <label for="dob">Date of Birth:</label>
+                <label for="dob">Date of Birth : </label>
                 <input type="date" id="dob">
             </div>
             
             <div class="input-group">
-                <label for="address">Address:</label>
+                <label for="address">Address :</label>
                 <textarea id="address"></textarea>
             </div>
             
@@ -48,13 +44,24 @@
             <h2>Document Upload Details (Simulated)</h2>
 
             <div class="input-group">
-                <label for="documentName">Document Type (e.g., ID, CV):</label>
+                <label for="documentName">Document Type (e.g., PERSONAL ID , CERTIFICATE , FILE  ) :</label>
                 <input type="text" id="documentName">
             </div>
 
             <div class="input-group">
-                <label for="documentUpload">Select File (Simulated):</label>
+                <label for="documentUpload">Select File (Simulated) :</label>
                 <input type="file" id="documentUpload">
+                    <input type="file" id="actual-btn" hidden />
+                    <div id="pdfViewContainer" class="pdf-view-container" style="display: none;">
+            <div id="pdfViewContent" class="pdf-content"></div>
+            <div class="pdf-actions">
+                <button type="button" id="closePdfBtn">Close</button>
+            </div>
+        </div>
+    <label for="actual-btn">
+        <i class="fas fa-upload"></i> Choose File
+    </label>
+
             </div>
             
             <hr>
@@ -93,3 +100,4 @@
 
 </body>
 </html>
+
