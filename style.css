@@ -89,6 +89,7 @@ hr {
     border-color: #191970; 
     box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.2);
     outline: none;
+    transition: border-color 0.3s, box-shadow 0.3s;
 }
 
 /* --- Button Styles --- */
@@ -305,5 +306,37 @@ h1 {
     margin-right: 15px; /* Space between icon and text */
     vertical-align: middle; 
 }
+img {
+  width: 10%; /* Sets the width to 150 pixels */
+  height: 20%; /* Sets the height to 100 pixels */
 
+}
+    label {
+        background-color:white; /* Example background color */
+        color: white;
+        padding: 0.5rem 1rem;
+        font-family: sans-serif;
+        border-radius: 0.3rem;
+        cursor: pointer;
+        display: inline-flex; /* To align icon and text */
+        align-items: center;
+        gap: 0.5rem; /* Space between icon and text */
+    }
+
+    /* Style for the icon itself, if needed */
+    label i {
+        font-size: 1.2em; /* Adjust icon size */
+    }
+    /* --- NEW: Ensure proper vertical alignment for images inside card-icon span --- */
+.card-icon img {
+    /* Ensures the image respects the size and alignment set in the script.js's IMG_STYLE */
+    vertical-align: middle; 
+}
+
+/* Optional: To ensure the text in the card body starts perfectly after the icon, 
+   you can ensure the span element is also aligned nicely */
+.card-detail-item span:last-child {
+    text-align: left;
+    flex-grow: 1; /* Allows the text to take up the remaining space */
+}
 /* ... (All other CSS styles remain the same) ... */
